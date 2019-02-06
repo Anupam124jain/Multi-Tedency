@@ -1,0 +1,32 @@
+version: '3'
+services:
+  db:
+    image: mysql:latest
+    networks:
+        - main
+    environment:
+      - MYSQL_ROOT_PASSWORD:password
+      - MYSQL_DATABASE:multi_tenent
+    ports:
+      - "3308:3306"
+
+  web:
+    build: .
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 127.0.0.1:8000"
+    container_name: MultiTenancy
+    networks:
+         - main
+    restart: always
+    volumes:
+      - .:/MultiTenancy
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    links:
+      - db
+
+networks:
+    main:
+        driver: bridge
+
